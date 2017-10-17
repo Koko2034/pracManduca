@@ -1,0 +1,338 @@
+<DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+        crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        crossorigin="anonymous"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7SiNPE9bdi9QjxCn-HvHhmj0pbmxd7Uc&libraries=places"></script>
+    <script type="text/javascript" src="../js/jquery-3.1.0.min.js"></script>  
+    
+    <title>Login</title>
+    <style>
+        #map {
+            height: 60%;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .controls {
+            margin-top: 10px;
+            border: 1px solid transparent;
+            border-radius: 2px 0 0 2px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            height: 32px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #pac-input {
+            background-color: #fff;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 300px;
+        }
+
+        #pac-input:focus {
+            border-color: #4d90fe;
+        }
+
+        .pac-container {
+            font-family: Roboto;
+        }
+
+        #type-selector {
+            color: #fff;
+            background-color: #4d90fe;
+            padding: 5px 11px 0px 11px;
+        }
+
+        #type-selector label {
+            font-family: Roboto;
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        #target {
+            width: 345px;
+        }
+        .red{
+            border-color:red;
+        }
+        .green{
+            border-color:green;
+        }
+    </style>
+</head>
+
+<body class="container-fluid">
+    <header class="text-center">
+        <h1>Alta Clientes</h1>
+    </header>
+    <main class=" row justify-content-md-center">
+        <div id="raul">
+
+        </div>
+       <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+        
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Informacion</h4>
+            </div>
+            <div class="modal-body">
+              <p>Ha realizado el alto</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+
+        <section class="col-6">
+            
+            <div class="form-group row">
+                <label for="txtID" class="col-2 col-form-label">ID</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtID" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="nick" class="col-2 col-form-label">Login</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtLogin" onblur="testFields('login',this.value,this.id)">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="password" class="col-12 col-form-label">Password</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtPass">
+                </div>
+                <label for="txtConfiPass" class="col-12 col-form-label">Confirm Password</label>
+                <div class="col-12">
+                    <input onblur="matchPasswd()" class="form-control" type="text" id="txtConfiPass">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtDireccion" class="col-12 col-form-label">Direccion</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtDireccion" disabled>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtMovil" class="col-2 col-form-label">Movil</label>
+                <div class="col-12">
+                    <input class="form-control" type="tel" id="txtMovil" onblur="testFields('movil',this.value,this.id)">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtLat" class="col-12 col-form-label">Latitud</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtLat">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="txtLon" class="col-12 col-form-label">Longitud</label>
+                <div class="col-12">
+                    <input class="form-control" type="text" id="txtLon">
+                </div>
+            </div>
+            <button id="butEnviar" class="btn btn-warning" onclick="envioDatos()">Enviar</button>
+        </section>
+
+        <section class="col-6 justify-content-md-center">
+            <label for="txtLon" class="col-12 col-form-label"> Direccion</label>
+            <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+            <div id="map" class="col-12"></div>
+        </section>
+    </main>
+</body>
+<script>
+    var formu;
+    (function init() {
+        initMap();
+        formu = new Object();
+        calculateID();
+    }());
+
+    function testFields(type, value,id) {
+        formu.accion = "check";
+        formu.value = value;
+        formu.type = type;
+        let data = JSON.stringify(formu);
+        $.ajax({
+            type: "POST",
+            data: { "data": data },
+            url: "manduca.php",
+            success: function (data) {
+                 var respuesta = JSON.parse(data);
+                    $('#'+id).addClass(respuesta.color);         
+            }
+        });
+    }
+
+    function matchPasswd() {
+        const pass1 = window.document.getElementById("txtPass");
+        const pass2 = window.document.getElementById("txtConfiPass");
+
+        if (pass1.value != pass2.value) {
+            pass1.className+="red";
+            pass2.addClass="red";
+            
+        } else {
+            pass1.style.borderColor = "green";
+            pass2.style.borderColor = "green";
+        }
+
+    }
+
+
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {
+                lat: 36.718025,
+                lng: -4.4467220000000225
+            },
+            zoom: 13,
+            mapTypeId: 'roadmap'
+        });
+
+        // Create the search box and link it to the UI element.
+        var input = window.document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function () {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function () {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            // Clear out the old markers.
+            markers.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function (place) {
+                if (!place.geometry) {
+                    console.log("Returned place contains no geometry");
+                    return;
+                }
+                var icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                };
+
+                // Create a marker for each place.
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: icon,
+                    title: place.name,
+                    position: place.geometry.location
+                }));
+
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+                window.document.getElementById("txtDireccion").value = place.name;
+                window.document.getElementById("txtLat").value = place.geometry.location.lat();
+                window.document.getElementById("txtLon").value = place.geometry.location.lng();
+            });
+            map.fitBounds(bounds);
+        });
+    }
+
+    function calculateID() {
+        formu.accion = "calculateId";
+        let data = JSON.stringify(formu);
+        $.ajax({
+            type: "POST",
+            data: {
+                "data": data
+            },
+            url: "manduca.php",
+            success: function (data) {
+                var respuesta = JSON.parse(data);
+                formu.id=respuesta.id;
+                window.document.getElementById('txtID').value = respuesta.id;
+            }
+        });
+    }
+
+    function envioDatos() {
+        formu.id = window.document.getElementById('txtID').value;
+        formu.login = window.document.getElementById('txtLogin').value;
+        formu.pass = window.document.getElementById('txtPass').value;
+        formu.direccion = window.document.getElementById('txtDireccion').value;
+        formu.movil = window.document.getElementById('txtMovil').value;
+        formu.lat = window.document.getElementById('txtLat').value;
+        formu.lon = window.document.getElementById('txtLon').value;
+        send();
+       // formu.id == "" || formu.login == "" || formu.movil == "" ? faltanDatos():send();
+    }
+    function send(){
+        formu.accion = "insertarCliente";
+        console.log(formu);
+        let data = JSON.stringify(formu);
+        $.ajax({
+            type: "POST",
+            data: {
+                "data": data
+            },
+            url: "manduca.php",
+            success: function (data) {
+                var respuesta = JSON.parse(data);
+                console.log(data);
+            }
+        });
+    }
+    function faltanDatos(){
+       alert("Faltan datos por introducir");
+    }
+    function raul(){
+        //tiene un modal de info
+        //limpiado de datos de los campos deberia llevar a una peticion para introducir la nueva id,llamar a calculate id
+    }
+</script>
+
+</html>
