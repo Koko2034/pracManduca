@@ -295,6 +295,7 @@
                     success: function (data) {
                         
                         var respuesta = JSON.parse(data);
+                        console.log(respuesta)
                         formu.id=respuesta.id;
                         window.document.getElementById('txtID').value = respuesta.id;
                     }

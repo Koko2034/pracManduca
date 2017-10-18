@@ -54,12 +54,11 @@ class manduca{
     }
     function insertarCliente($id,$login,$pass,$direccion,$movil,$lat,$lon){
         $punto = "$lat $lon";
-        $punto = "GeomFromText('POINT(".$punto.")')";
-         $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (LOGIN,CLAVE,DIRECCION,MOVIL,LAT,LON,PUNTO) 
-                                        VALUES (?,?,?,?,?,?,GeomFromText('POINT($punto)')) ;");
+         $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (ID,LOGIN,CLAVE,DIRECCION,MOVIL,LAT,LON,PUNTO) 
+                                        VALUES (?,?,?,?,?,?,?,GeomFromText('POINT($punto)')) ;");
         $status ="ko";
         $html = "Error al introducir datos";
-        $stmt->bind_param('sssidds',$login,$pass,$direccion,$movil,$lat,$lon,$lat,$lon); 
+        $stmt->bind_param('isssidd',$id,$login,$pass,$direccion,$movil,$lat,$lon); 
         if($stmt->execute()){
             $stmt->store_result();
             $status ="ok";
@@ -69,14 +68,18 @@ class manduca{
         return json_encode(array("status"=>$status,"html"=>$html));
     }
     function comprobarParam($accion,$value){
-        $stmt = $this->oConni->prepare("SELECT * FROM CLIENTES WHERE ? = ?;");
+        $stmt = $this->oConni->prepare("SELECT LOGIN FROM CLIENTES WHERE ? = ?;");
         $stmt->bind_param('ss',$accion,$value);
         $status = "ok";
         $color= "red";
         if($stmt->execute()){
             $stmt->store_result();
-            $status ="ok";
-            $color= "green";
+            $stmt->bind_result($login);
+            if($value==$login){
+                $status ="ok";
+                $color= "green";
+            }
+            
         }
         $stmt->close();
         return json_encode(array("status"=>$status,"color"=>$color));
@@ -91,7 +94,8 @@ class manduca{
         $status="";
         if($stmt->execute()){
             $stmt->store_result();
-            $stmt = $this->oConni->prepare("SELECT MAX(ID) FROM CLIENTES");
+            $id= 5;
+           /* $stmt = $this->oConni->prepare("SELECT max(ID) FROM CLIENTES");
             if($stmt->execute()){
                 $stmt->store_result();
                 $stmt->bind_result($idManduca);
@@ -103,7 +107,7 @@ class manduca{
                 $html = $stmt->errno . " " . $stmt->error;
                 $status = "KO";
                 }
-
+*/
         }else{
             $html = $stmt->errno . " " . $stmt->error;
             $status = "KO";
