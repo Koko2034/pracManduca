@@ -14,26 +14,34 @@ $aux = json_decode($accion,true);
 $accion = $aux['accion'];
 
 $m = new manduca();
-
 if($accion === "calculateId"){
     echo $m->calcuId();
 }
-//$accion = "insertarCliente";
+
+if($accion === "calculateIdTriggerVersion"){
+    echo $m->calcuIDTrigguerVersion();
+}
+
+if($accion === "insertarClienteTrigguerVersion"){
+    echo $m->insertarClienteTrigerVersion($login,$pass,$direccion,$movil,$lat,$lon,$id);
+}
+$accion = "insertarCliente";
 if($accion === "insertarCliente"){
+    /*$id = $aux['id'];
     $login = $aux['login'];
     $movil =(int)$aux['movil'];
     $pass = $aux['pass'];
     $direccion =$aux['direccion'];
     $lat =(float)$aux['lat'];
-    $lon =(float)$aux['lon'];
-   /* $id="17";
-    $login="Raul";
-    $pass="andujar34";
-    $direccion ="Compositor";
-    $movil=636414000;
-    $lat=40;
-    $lon=30;*/
-    echo $m->insertarCliente($login,$pass,$direccion,$movil,$lat,$lon);
+    $lon =(float)$aux['lon'];*/
+    $id=36;
+    $login = "Manuel";
+    $movil = 888999777;
+    $pass = "raul";
+    $direccion = "calle2";
+    $lat = 55;
+    $lon = 65;
+    echo $m->insertarCliente($id,$login,$pass,$direccion,$movil,$lat,$lon);
 }
 if($accion ==="check"){
     $type = $aux['type'];

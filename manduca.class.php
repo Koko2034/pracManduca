@@ -52,12 +52,14 @@ class manduca{
        
         
     }
-    function insertarCliente($login,$pass,$direccion,$movil,$lat,$lon){
-        $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (LOGIN,CLAVE,DIRECCION,MOVIL,LAT,LON) 
-                                        VALUES (?,?,?,?,?,?) ;");
+    function insertarCliente($id,$login,$pass,$direccion,$movil,$lat,$lon){
+        $punto = "$lat $lon";
+        $punto = "GeomFromText('POINT(".$punto.")')";
+         $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (LOGIN,CLAVE,DIRECCION,MOVIL,LAT,LON,PUNTO) 
+                                        VALUES (?,?,?,?,?,?,GeomFromText('POINT($punto)')) ;");
         $status ="ko";
         $html = "Error al introducir datos";
-        $stmt->bind_param('sssiii',$login,$pass,$direccion,$movil,$lat,$lon); 
+        $stmt->bind_param('sssidds',$login,$pass,$direccion,$movil,$lat,$lon,$lat,$lon); 
         if($stmt->execute()){
             $stmt->store_result();
             $status ="ok";
@@ -78,6 +80,49 @@ class manduca{
         }
         $stmt->close();
         return json_encode(array("status"=>$status,"color"=>$color));
+    }
+    function calcuIDTrigguerVersion(){
+        ob_start();
+        $login = " ";
+        $movil = 0;
+        $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (LOGIN,MOVIL) VALUES (?,?);");
+        $stmt->bind_param('si',$login,$movil);
+        $html="";
+        $status="";
+        if($stmt->execute()){
+            $stmt->store_result();
+            $stmt = $this->oConni->prepare("SELECT MAX(ID) FROM CLIENTES");
+            if($stmt->execute()){
+                $stmt->store_result();
+                $stmt->bind_result($idManduca);
+                if($stmt->fetch()){
+                    $id =$idManduca;
+                }
+                $status = "ok";
+            }else{
+                $html = $stmt->errno . " " . $stmt->error;
+                $status = "KO";
+                }
 
+        }else{
+            $html = $stmt->errno . " " . $stmt->error;
+            $status = "KO";
+            }
+        $stmt->close();
+       return json_encode(array("status"=>$status,"html"=>$html,"id"=>$id));
+    }
+    function insertarClienteTrigerVersion($login,$pass,$direccion,$movil,$lat,$lon,$id){
+        $punto ="$lat $lon";
+        $stmt = $this->oConni->prepare("UPDATE CLIENTES SET LOGIN = ? , CLAVE = ? ,DIRECCION = ?,MOVIL=?,LAT=?,LON=?,PUNTO = GeomFromText('POINT($punto)') WHERE ID=? ;");
+        $status ="ko";
+        $html = "Error al introducir datos";
+        $stmt->bind_param('sssiddi',$login,$pass,$direccion,$movil,$lat,$lon,$id); 
+        if($stmt->execute()){
+                $stmt->store_result();
+                $status ="ok";
+                $html = "Los datos han sido introducidos correctamente";
+        }
+        $stmt->close();
+        return json_encode(array("status"=>$status,"html"=>$html));
     }
 }

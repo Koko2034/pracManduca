@@ -86,11 +86,10 @@
                 <h1>Alta Clientes</h1>
             </header>
             <main class=" row justify-content-md-center">
-        
+            <div id="divInfo"></div>
                <!-- Modal -->
           <div class="modal fade" id="myModal" role="dialog">
-                <div class="modal-dialog">
-                
+                <div class="modal-dialog">   
                   <!-- Modal content-->
                   <div class="modal-content">
                     <div class="modal-header">
@@ -207,9 +206,7 @@
                 }
         
             }
-            function addClass (id , clase){
-                window.document.getElementById(id);
-            }
+         
         
         
             function initMap() {
@@ -286,7 +283,8 @@
             }
         
             function calculateID() {
-                formu.accion = "calculateId";
+                formu.accion = "calculateIdTriggerVersion";
+                
                 let data = JSON.stringify(formu);
                 $.ajax({
                     type: "POST",
@@ -295,6 +293,7 @@
                     },
                     url: "manduca.php",
                     success: function (data) {
+                        
                         var respuesta = JSON.parse(data);
                         formu.id=respuesta.id;
                         window.document.getElementById('txtID').value = respuesta.id;
@@ -310,13 +309,12 @@
                 formu.movil = window.document.getElementById('txtMovil').value;
                 formu.lat = window.document.getElementById('txtLat').value;
                 formu.lon = window.document.getElementById('txtLon').value;
-                send();
-               // formu.id != "" || formu.login != "" || formu.movil != "" ? faltanDatos():send();
+                formu.id != "" || formu.login != "" || formu.movil != "" ? modalShow("Faltan datos por introducir"):send();
             }
     
             function modalInfo(text){
                 
-                return '<div class="modal fade" id="myModal" role="dialog">'+
+                const html = '<div class="modal fade" id="myModal" role="dialog">'+
                 '<div class="modal-dialog">'+
                   '<div class="modal-content">'+
                     '<div class="modal-header">'+
@@ -328,14 +326,11 @@
                     '</div>'+
                     '<div class="modal-footer">'+
                       '<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>'+
-                    '</div>'+
-                  '</div>'+
-                '</div>'+
-              '</div>'
-    
+                    '</div></div><div></div>'
+                        return html;
             }
             function send(){
-                formu.accion = "insertarCliente";
+                formu.accion = "insertarClienteTriggerVersion";
                 console.log(formu);
                 let data = JSON.stringify(formu);
                 $.ajax({
@@ -346,12 +341,15 @@
                     url: "manduca.php",
                     success: function (data) {
                         var respuesta = JSON.parse(data);
-                        console.log(data);
-                         //devuelve status OK
+                        modalShow(respuesta.html);
+                    
                     }
                 });
+            }  
+            function modalShow(){
+                window.document.getElementById("divInfo").innerHTML=modalInfo(respuesta.html);
             }
-            
+         
         </script>
         
         </html>
