@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Record Item</title>
+    <script type="text/javascript" src="../js/jquery-3.1.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+        crossorigin="anonymous">
+    <style>
+        header {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>Formulario agregar item a carta</header>
+    <div class="container" id="divFormu">
+        <form  method="POST" enctype="application/x-www-form-urlencoded" action="recordItem.php" id="frmData">
+            <div class="form-group">
+                <label for="txtId">Id:</label>
+                <input type="text" class="form-control" name="txtId" id="txtId">
+            </div>
+            <div class="form-group">
+                <label for="txtCat">Categoria:</label>
+                <input type="text" class="form-control" name="txtCat" id="txtCat">
+            </div>
+            <div class="form-group">
+                <label for="txtName">Nombre:</label>
+                <input type="text" class="form-control" name="txtName" id="txtName">
+            </div>
+            <div class="form-group">
+                <label for="txtSize">Tamaño:</label>
+                <select class="form-control" name="txtSize" id="txtSize">
+                      <option selected></option>
+                      <option>Pequeño</option>
+                      <option>Mediano</option>
+                      <option>Grande</option>
+                    </select>
+            </div>
+            <div class="form-group">
+                    <label for="txtInterval">Intervalo:</label>
+                    <input type="number" min="0" step="1" class="form-control" name="txtInterval" id="txtInterval">
+                </div>
+            <div class="form-group">
+                    <label for="txtPrice">Precio:</label>
+                    <input type="number" min="0" step="0.01" class="form-control" name="txtPrice" id="txtPrice">
+                </div>
+                <div class="form-group">
+                        <label for="txtUrl">Url:</label>
+                        <input type="text" class="form-control" name="txtUrl" id="txtUrl">
+                    </div>
+            <button type="submit" class="btn btn-default">Enviar</button>
+        </form>
+    </div>
+   
+</body>
+<script>
+    var form = $('#frmData');
+    form.submit(function (event) {
+    event.preventDefault();
+    var formData = new FormData($(this)[0]);
+    console.log(formData);
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: formData,
+        async: false,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (returndata) {
+            returndata = JSON.parse(returndata);
+            console.log(returndata);
+        }
+    });
+});
+
+</script>
+
+</html>

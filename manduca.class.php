@@ -20,7 +20,6 @@ class manduca{
     public function __desctruct() {
         $this->oConexion->cerrar();
     }
-
     public function testOC() {
         ob_start();
         $oConsulta = $this->oConni->query("SHOW TABLES");
@@ -33,100 +32,53 @@ class manduca{
     function calcuId(){
         ob_start();
         $stmt = $this->oConni->prepare("SELECT max(ID) FROM CLIENTES");
-        $html="";
-        $id=0;
-        $status="";
-        if($stmt->execute()){
-            $stmt->store_result();
-            $stmt->bind_result($idManduca);
-            if($stmt->fetch()){
-                $id =$idManduca+1;
-            }
-            $status = "ok";
-        }else{
-            $html = $stmt->errno . " " . $stmt->error;
-            $status = "KO";
-            }
+        $stmt->execute();
+        $debug = $stmt->errno . " " . $stmt->error; 
+        $stmt->store_result();
+        $stmt->bind_result($idManduca);
+        $status="KO";
+        if($stmt->fetch()){
+            $id =$idManduca+1; 
+            $status = "OK";
+        }
         $stmt->close();
-       return json_encode(array("status"=>$status,"html"=>$html,"id"=>$id));
-       
-        
+        return json_encode(array("status"=>$status,"id"=>$id));   
     }
     function insertarCliente($id,$login,$pass,$direccion,$movil,$lat,$lon){
         $punto = "$lat $lon";
          $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (ID,LOGIN,CLAVE,DIRECCION,MOVIL,LAT,LON,PUNTO) 
                                         VALUES (?,?,?,?,?,?,?,GeomFromText('POINT($punto)')) ;");
-        $status ="ko";
-        $html = "Error al introducir datos";
+        $status ="OK";
         $stmt->bind_param('isssidd',$id,$login,$pass,$direccion,$movil,$lat,$lon); 
-        if($stmt->execute()){
-            $stmt->store_result();
-            $status ="ok";
-            $html = "Los datos han sido introducidos correctamente";
+        $stmt->execute();
+        $html = "Introducido los datos correctamente";
+        $debug = $stmt->errno . " " . $stmt->error; 
+        if($stmt->affected_rows==0){
+           $status = "KO";
         }
         $stmt->close();
-        return json_encode(array("status"=>$status,"html"=>$html));
+        return json_encode(array("status"=>$status,"debug"=>$debug,"html"=>$html));
     }
     function comprobarParam($accion,$value){
-        $stmt = $this->oConni->prepare("SELECT LOGIN FROM CLIENTES WHERE ? = ?;");
-        $stmt->bind_param('ss',$accion,$value);
-        $status = "ok";
-        $color= "red";
-        if($stmt->execute()){
-            $stmt->store_result();
-            $stmt->bind_result($login);
-            if($value==$login){
-                $status ="ok";
-                $color= "green";
+        if($accion === "login"){
+            $value = "'$value'";
+        }
+        $stmt = $this->oConni->prepare("SELECT LOGIN FROM CLIENTES WHERE ".$accion." = " .$value." ;");
+        $status = "OK";
+        $color= "green";
+        $stmt->execute();
+        $debug = $stmt->errno . " " . $stmt->error; 
+        $stmt->store_result();
+        $stmt->bind_result($login);
+        if($stmt->fetch()){
+            if($login!=null){
+                $status ="KO";
+                $color= "red";
             }
-            
         }
         $stmt->close();
-        return json_encode(array("status"=>$status,"color"=>$color));
+        return json_encode(array("status"=>$status,"color"=>$color,"debug"=>$debug));
+    
     }
-    function calcuIDTrigguerVersion(){
-        ob_start();
-        $login = " ";
-        $movil = 0;
-        $stmt = $this->oConni->prepare("INSERT INTO CLIENTES (LOGIN,MOVIL) VALUES (?,?);");
-        $stmt->bind_param('si',$login,$movil);
-        $html="";
-        $status="";
-        if($stmt->execute()){
-            $stmt->store_result();
-            $id= 5;
-           /* $stmt = $this->oConni->prepare("SELECT max(ID) FROM CLIENTES");
-            if($stmt->execute()){
-                $stmt->store_result();
-                $stmt->bind_result($idManduca);
-                if($stmt->fetch()){
-                    $id =$idManduca;
-                }
-                $status = "ok";
-            }else{
-                $html = $stmt->errno . " " . $stmt->error;
-                $status = "KO";
-                }
-*/
-        }else{
-            $html = $stmt->errno . " " . $stmt->error;
-            $status = "KO";
-            }
-        $stmt->close();
-       return json_encode(array("status"=>$status,"html"=>$html,"id"=>$id));
-    }
-    function insertarClienteTrigerVersion($login,$pass,$direccion,$movil,$lat,$lon,$id){
-        $punto ="$lat $lon";
-        $stmt = $this->oConni->prepare("UPDATE CLIENTES SET LOGIN = ? , CLAVE = ? ,DIRECCION = ?,MOVIL=?,LAT=?,LON=?,PUNTO = GeomFromText('POINT($punto)') WHERE ID=? ;");
-        $status ="ko";
-        $html = "Error al introducir datos";
-        $stmt->bind_param('sssiddi',$login,$pass,$direccion,$movil,$lat,$lon,$id); 
-        if($stmt->execute()){
-                $stmt->store_result();
-                $status ="ok";
-                $html = "Los datos han sido introducidos correctamente";
-        }
-        $stmt->close();
-        return json_encode(array("status"=>$status,"html"=>$html));
-    }
+    
 }
